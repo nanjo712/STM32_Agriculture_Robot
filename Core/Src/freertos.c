@@ -169,14 +169,15 @@ void StartChassisControl(void *argument)
   /* USER CODE BEGIN StartChassisControl */
   osDelay(1000);
   myChassis.chassis_init(&hcan2);
-//  OSLIB_UART_Handle_t *uart_handle= OSLIB_UART_Handle_Get(&huart2);
+  OSLIB_UART_Handle_t *uart_handle= OSLIB_UART_Handle_Get(&huart2);
   /* Infinite loop */
   for(;;)
   {
-//    osSemaphoreAcquire(uart_handle->rx.dma.rx_sema,osWaitForever);
-//    SerialVelMsgTypeDef msg;
-//    memcpy(msg.ui8,uart_handle->rx.dma.rx_task_buffer,uart_handle->rx.dma.rx_buffer_len);
-//    myChassis.chassis_move(&hcan2,msg);
+    osSemaphoreAcquire(uart_handle->rx.dma.rx_sema,osWaitForever);
+    SerialVelMsgTypeDef msg;
+    msg.raw_msg[0]=0,msg.raw_msg[5]=0;
+    memcpy(msg.ui8,uart_handle->rx.dma.rx_task_buffer,uart_handle->rx.dma.rx_buffer_len);
+    myChassis.chassis_move(&hcan2,msg);
     osDelay(1);
   }
   /* USER CODE END StartChassisControl */

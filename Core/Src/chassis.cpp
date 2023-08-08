@@ -7,12 +7,14 @@
 extern "C" {
 #include "../BUPT_RobotTeam_Libraries/MotorLib/dji_boardv2_can.h"
 };
+
 #define DRIVE_WHEEL_MAX_SPEED (0.2)
 #define WHEEL2CHASSISCENTER_SQUARE (0.31*0.31)
 #define WHEEL_FRONT2BACK_DISTANCE (0.41)
 #define DRIVE_WHEEL_RADIUS (0.075)
 #define DJIV2_BOARD_ID (2)
 #define PI (3.1415926535)
+
 
 
 void chassis::chassis_init(CAN_HandleTypeDef *hcan) {
@@ -46,9 +48,11 @@ void chassis::chassis_move(CAN_HandleTypeDef *hcan, SerialVelMsgTypeDef msg) {
     driveWheelSpeed[3]=target_speed  // 线速度解算
                        + target_omega * WHEEL2CHASSISCENTER_SQUARE / WHEEL_FRONT2BACK_DISTANCE * 2 ; // 角速度解算
 
-    // 传入指令
+    driveWheelSpeed[2]=-driveWheelSpeed[2];
+    driveWheelSpeed[3]=-driveWheelSpeed[3];
+   // 传入指令
     for (uint8_t i = 0 ; i < 4 ; i++) {
-        DJIBoard_VelCtrl(hcan, DJIV2_BOARD_ID, i + 1, driveWheelSpeed[i] / DRIVE_WHEEL_RADIUS * 2 * PI / 1000 * 8192 );
+        DJIBoard_VelCtrl(hcan, DJIV2_BOARD_ID, i + 1, driveWheelSpeed[i] / DRIVE_WHEEL_RADIUS * 2 * PI / 1000 * 4096 );
         osDelay(1);
     }
 }
