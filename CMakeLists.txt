@@ -84,6 +84,7 @@ set(
         Core/Inc/stm32f4xx_hal_conf.h
         Core/Inc/stm32f4xx_it.h
         Core/Inc/usart.h
+        Core/Inc/chassis.h
 )
 set(
         Core_SRC
@@ -100,6 +101,7 @@ set(
         Core/Src/system_stm32f4xx.c
         Core/Src/usart.c
         Core/Startup/startup_stm32f407zgtx.s
+        Core/Src/chassis.cpp
 )
 file(GLOB_RECURSE RTOS "Middlewares/*.*")
 file(GLOB_RECURSE HAL_Driver "Drivers/STM32F4xx_HAL_Driver/*.*")

@@ -35,9 +35,7 @@ extern "C"{
 #ifdef __cplusplus
 extern "C"{
 #endif
-//#include "../BUPT_RobotTeam_Libraries-port/ChassisLib/base_chassis.h"
-//#include "../BUPT_RobotTeam_Libraries-port/ChassisLib/rudder_chassis.h"
-//#include "../BUPT_RobotTeam_Libraries-port/ChassisLib/steer_wheel.h"
+
 #include "oslib.h"
 #include <stdint.h>
 #include "MotorLib/dji_boardv2_can.h"
@@ -46,11 +44,9 @@ extern "C"{
 }
 #endif
 
-//#include <string>
-#include "ChassisLib_CXX/base_chassis.h"
-#include "ChassisLib_CXX/rudder_chassis.h"
-#include "ChassisLib_CXX/app_example/chassis_ctrl.h"
-#include "ChassisLib_CXX/app_example/chassis_cmd.h"
+#include <cstring>
+#include "chassis.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,7 +66,7 @@ extern "C"{
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+chassis myChassis;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -155,7 +151,8 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-
+      HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
+      osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -170,9 +167,16 @@ void StartDefaultTask(void *argument)
 void StartChassisControl(void *argument)
 {
   /* USER CODE BEGIN StartChassisControl */
+  osDelay(1000);
+  myChassis.chassis_init(&hcan2);
+//  OSLIB_UART_Handle_t *uart_handle= OSLIB_UART_Handle_Get(&huart2);
   /* Infinite loop */
   for(;;)
   {
+//    osSemaphoreAcquire(uart_handle->rx.dma.rx_sema,osWaitForever);
+//    SerialVelMsgTypeDef msg;
+//    memcpy(msg.ui8,uart_handle->rx.dma.rx_task_buffer,uart_handle->rx.dma.rx_buffer_len);
+//    myChassis.chassis_move(&hcan2,msg);
     osDelay(1);
   }
   /* USER CODE END StartChassisControl */

@@ -5,7 +5,6 @@ option(USE_MotorLib "开启MotorLib" OFF)
 option(USE_ChassisLib "开启ChassisLib" OFF)
 
 set(USE_MotorLib ON)
-set(USE_ChassisLib ON)
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/BUPTLib_port.h)
 set(INC ${CMAKE_CURRENT_SOURCE_DIR}/)
