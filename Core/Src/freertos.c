@@ -82,6 +82,13 @@ const osThreadAttr_t chassisControl_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for balanceMotorTas */
+osThreadId_t balanceMotorTasHandle;
+const osThreadAttr_t balanceMotorTas_attributes = {
+  .name = "balanceMotorTas",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -92,6 +99,7 @@ extern "C"{
 
 void StartDefaultTask(void *argument);
 void StartChassisControl(void *argument);
+void StartBalance(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -127,6 +135,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of chassisControl */
   chassisControlHandle = osThreadNew(StartChassisControl, NULL, &chassisControl_attributes);
+
+  /* creation of balanceMotorTas */
+  balanceMotorTasHandle = osThreadNew(StartBalance, NULL, &balanceMotorTas_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -181,6 +192,24 @@ void StartChassisControl(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartChassisControl */
+}
+
+/* USER CODE BEGIN Header_StartBalance */
+/**
+* @brief Function implementing the balanceMotorTas thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartBalance */
+void StartBalance(void *argument)
+{
+  /* USER CODE BEGIN StartBalance */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartBalance */
 }
 
 /* Private application code --------------------------------------------------*/
