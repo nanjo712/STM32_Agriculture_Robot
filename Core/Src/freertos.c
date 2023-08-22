@@ -89,6 +89,18 @@ const osThreadAttr_t balanceMotorTas_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for waterVase */
+osThreadId_t waterVaseHandle;
+const osThreadAttr_t waterVase_attributes = {
+  .name = "waterVase",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for WaterSema */
+osSemaphoreId_t WaterSemaHandle;
+const osSemaphoreAttr_t WaterSema_attributes = {
+  .name = "WaterSema"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -100,6 +112,7 @@ extern "C"{
 void StartDefaultTask(void *argument);
 void StartChassisControl(void *argument);
 void StartBalance(void *argument);
+void StartWaterVase(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -116,6 +129,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
+
+  /* Create the semaphores(s) */
+  /* creation of WaterSema */
+  WaterSemaHandle = osSemaphoreNew(3, 3, &WaterSema_attributes);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
@@ -138,6 +155,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of balanceMotorTas */
   balanceMotorTasHandle = osThreadNew(StartBalance, NULL, &balanceMotorTas_attributes);
+
+  /* creation of waterVase */
+  waterVaseHandle = osThreadNew(StartWaterVase, NULL, &waterVase_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -188,6 +208,14 @@ void StartChassisControl(void *argument)
     SerialVelMsgTypeDef msg;
     msg.raw_msg[0]=0,msg.raw_msg[5]=0;
     memcpy(msg.ui8,uart_handle->rx.dma.rx_task_buffer,uart_handle->rx.dma.rx_buffer_len);
+    if (msg.raw_msg[1]!=0)
+    {
+        for (int i=0;i<msg.raw_msg[1];i++)
+        {
+            osSemaphoreRelease(WaterSemaHandle);
+            osDelay(1);
+        }
+    }
     myChassis.chassis_move(&hcan2,msg);
     osDelay(1);
   }
@@ -210,6 +238,30 @@ void StartBalance(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartBalance */
+}
+
+/* USER CODE BEGIN Header_StartWaterVase */
+/**
+* @brief Function implementing the waterVase thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartWaterVase */
+void StartWaterVase(void *argument)
+{
+  /* USER CODE BEGIN StartWaterVase */
+  /* Infinite loop */
+  for(;;)
+  {
+      osSemaphoreAcquire(WaterSemaHandle,osWaitForever);
+      HAL_GPIO_WritePin(IN1_GPIO_Port,IN1_Pin,GPIO_PIN_SET);
+      HAL_GPIO_WritePin(IN2_GPIO_Port,IN2_Pin,GPIO_PIN_SET);
+      osDelay(500);
+      HAL_GPIO_WritePin(IN1_GPIO_Port,IN1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(IN2_GPIO_Port,IN2_Pin,GPIO_PIN_RESET);
+      osDelay(350);
+  }
+  /* USER CODE END StartWaterVase */
 }
 
 /* Private application code --------------------------------------------------*/

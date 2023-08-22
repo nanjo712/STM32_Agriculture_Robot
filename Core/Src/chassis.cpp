@@ -9,12 +9,11 @@ extern "C" {
 };
 
 #define DRIVE_WHEEL_MAX_SPEED (0.2)
-#define WHEEL2CHASSISCENTER_SQUARE (0.31*0.31)
+#define WHEEL2CHASSISCENTER_SQUARE (0.24f*0.24f)
 #define WHEEL_FRONT2BACK_DISTANCE (0.41)
 #define DRIVE_WHEEL_RADIUS (0.075)
 #define DJIV2_BOARD_ID (2)
 #define PI (3.1415926535)
-
 
 
 void chassis::chassis_init(CAN_HandleTypeDef *hcan) {
